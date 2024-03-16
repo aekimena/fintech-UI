@@ -12,7 +12,6 @@ import { colors } from "../../utils/colors";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
-  withSpring,
   withTiming,
 } from "react-native-reanimated";
 
