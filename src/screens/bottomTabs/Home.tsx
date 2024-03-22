@@ -1,7 +1,7 @@
 import {
-  Button,
   Dimensions,
   Image,
+  Pressable,
   SafeAreaView,
   ScrollView,
   StatusBar,
@@ -23,10 +23,11 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 
 const { height, width } = Dimensions.get("window");
 
-const IndexIndicators = () => {
+export const IndexIndicators = () => {
   return (
     <View style={styles.indicatorsCont}>
       <View style={[styles.indicators, { backgroundColor: "#fff" }]}></View>
@@ -37,6 +38,7 @@ const IndexIndicators = () => {
 };
 
 export const Home = () => {
+  const navigation = useNavigation<any>();
   const bottomSheetRef = useRef<BottomSheet>(null);
   const snapPoints = useMemo(() => ["54%", "100%"], []);
   const [scrollIndex, setScrollIndex] = useState(0);
@@ -45,26 +47,83 @@ export const Home = () => {
   const secondTranslateY = useSharedValue(500);
   const cardTranslateY = useSharedValue(-300);
 
+  useFocusEffect(
+    () => {
+      if (firstTranslateY.value == -300) {
+        firstTranslateY.value = withDelay(
+          200,
+          withTiming(firstTranslateY.value + 300, {
+            duration: 500,
+          })
+        );
+      }
+      if (secondTranslateY.value == 500) {
+        secondTranslateY.value = withDelay(
+          200,
+          withTiming(secondTranslateY.value - 500, {
+            duration: 500,
+          })
+        );
+      }
+      if (cardTranslateY.value == -300) {
+        cardTranslateY.value = withDelay(
+          400,
+          withTiming(cardTranslateY.value + 300, {
+            duration: 500,
+          })
+        );
+      }
+    }
+    // })()
+  );
+
   useEffect(() => {
-    if (firstTranslateY.value == -300) {
-      firstTranslateY.value = withTiming(firstTranslateY.value + 300, {
+    // if (firstTranslateY.value == -300) {
+    //   firstTranslateY.value = withDelay(
+    //     500,
+    //     withTiming(firstTranslateY.value + 300, {
+    //       duration: 500,
+    //     })
+    //   );
+    // }
+    // if (secondTranslateY.value == 500) {
+    //   secondTranslateY.value = withDelay(
+    //     500,
+    //     withTiming(secondTranslateY.value - 500, {
+    //       duration: 500,
+    //     })
+    //   );
+    // }
+    // if (cardTranslateY.value == -300) {
+    //   cardTranslateY.value = withDelay(
+    //     1000,
+    //     withTiming(cardTranslateY.value + 300, {
+    //       duration: 500,
+    //     })
+    //   );
+    // }
+  }, []);
+
+  function cardPress() {
+    (async () => {
+      firstTranslateY.value = withTiming(firstTranslateY.value - 300, {
         duration: 500,
       });
-    }
-    if (secondTranslateY.value == 500) {
-      secondTranslateY.value = withTiming(secondTranslateY.value - 500, {
+      cardTranslateY.value = withTiming(cardTranslateY.value - 300, {
         duration: 500,
       });
-    }
-    if (cardTranslateY.value == -300) {
-      cardTranslateY.value = withDelay(
-        500,
-        withTiming(cardTranslateY.value + 300, {
-          duration: 1000,
+      secondTranslateY.value = withDelay(
+        300,
+        withTiming(secondTranslateY.value + 500, {
+          duration: 500,
         })
       );
-    }
-  }, []);
+    })().then(() => {
+      setTimeout(() => {
+        navigation.navigate("Cards");
+      }, 200);
+    });
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -114,7 +173,7 @@ export const Home = () => {
                   { transform: [{ translateY: cardTranslateY }] },
                 ]}
               >
-                <View style={styles.card}>
+                <Pressable style={styles.card} onPress={cardPress}>
                   <View
                     style={[
                       styles.flexRowBtw,
@@ -151,7 +210,7 @@ export const Home = () => {
                       6654
                     </Text>
                   </View>
-                </View>
+                </Pressable>
               </Animated.View>
               <Animated.View style={[styles.cardCont]}>
                 <View style={[styles.card]}></View>
